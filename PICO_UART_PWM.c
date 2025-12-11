@@ -9,7 +9,7 @@
 #define PWM_PIN 22
 
 #define UART_ID uart1
-#define BAUD_RATE 31250
+#define BAUD_RATE 115200
 #define DATA_BITS 8
 #define STOP_BITS 1
 #define PARITY UART_PARITY_NONE
@@ -60,6 +60,9 @@ int main(){
         uint8_t buffer[10];
         uart_read_blocking(UART_ID, buffer, 10);
     }
+
+    //Writing UART
+    // uart_putc_raw(UART_ID, 0x90);
 
     return 0;
 }
