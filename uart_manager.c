@@ -5,9 +5,10 @@
 #include "hardware/uart.h"
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 
-enum STATUS_FLAGS status_flag = NONE;
+enum STATUS_FLAGS status_flag = IDLE;
 
 char uart_buffer[BUFFER_LEN];
 char received_speeds[BUFFER_LEN];
@@ -49,7 +50,8 @@ char* get_received_buffer() {
 
 enum STATUS_FLAGS handle_status_flag() {
     enum STATUS_FLAGS current_flag;
-    status_flag = NORMAL;
+    current_flag = status_flag;
+    status_flag = IDLE;
 
     return current_flag;
 }
@@ -77,7 +79,7 @@ void init_uart() {
 
 
 void send_msg(char msg[], enum MSG_SEVERITY severity) {
-    char formatted_msg[MSG_MAX_SIZE];
+    char msg_header[8];
 
     uint16_t boot_counter = boot_counter_get();
     char boot_counter_format[3];
@@ -87,10 +89,31 @@ void send_msg(char msg[], enum MSG_SEVERITY severity) {
 
     //"AB-MSG=ACK:A"
     if (severity == ERROR) {
-        snprintf(formatted_msg, sizeof formatted_msg, "%s-%s=%s", boot_counter_format, "ERR", msg);
+        sprintf(msg_header, "%s-%s=", boot_counter_format, "ERR");
     } else {
-        snprintf(formatted_msg, sizeof formatted_msg, "%s-%s=%s", boot_counter_format, "MSG", msg);
+        sprintf(msg_header, "%s=", boot_counter_format);
     }
 
-    uart_puts(UART_ID, formatted_msg);
+    char *full_msg = safe_concat(msg_header, msg);
+    if (full_msg) {
+        uart_puts(UART_ID, full_msg);
+        free(full_msg); // Free allocated memory
+    }
+}
+
+static char* safe_concat(const char *s1, const char *s2) {
+    // 1. Calculate required size: length1 + length2 + null-terminator + newline
+    size_t len1 = strlen(s1);
+    size_t len2 = strlen(s2);
+    char *result = malloc(len1 + len2 + 2);
+
+    // 2. Check for malloc failure
+    if (result == NULL) return NULL;
+
+    // 3. Perform safe concatenation
+    strcpy(result, s1);
+    strcat(result, s2);
+    strcat(result, "\n");
+
+    return result; // Caller must free() this memory
 }

@@ -2,7 +2,7 @@
 #define _UART_MANAGER_H
 
 #define UART_ID uart0
-#define BAUD_RATE 9600
+#define BAUD_RATE 38400
 #define DATA_BITS 8
 #define STOP_BITS 1
 #define PARITY UART_PARITY_EVEN
@@ -19,16 +19,17 @@ enum MSG_SEVERITY {
 	ERROR,
 };
 enum STATUS_FLAGS {
-	NONE,
+	IDLE,
 	VALID_PACKET,
 	INCOMPLETE_PACKET,
 };
 
 
 void init_uart();
-void send_msg(char name[MSG_MAX_SIZE], enum MSG_SEVERITY);
+void send_msg(char msg[], enum MSG_SEVERITY);
 char* get_received_buffer();
 void on_uart_rx();
 enum STATUS_FLAGS handle_status_flag();
+static char* safe_concat(const char *s1, const char *s2);
 
 #endif

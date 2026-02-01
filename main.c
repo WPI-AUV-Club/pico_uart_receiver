@@ -18,7 +18,7 @@
 #define MOTOR_6 8
 #define MOTOR_7 9
 
-#define MAX_TIME_BETWEEN_PACKETS 25
+#define MAX_TIME_BETWEEN_PACKETS 60
 
 
 unsigned char ack_index = 1;
@@ -67,9 +67,11 @@ int main(){
         if (status == INCOMPLETE_PACKET) {
             send_msg("MALFORMED_PACKET", ERROR);
             continue;
-        } else if (status == NONE) {
+        } else if (status == IDLE) {
             continue;
         }
+
+        last_packet_received_ms = curr_time_ms;
         char* motor_speeds = get_received_buffer();
         
         set_pwm_pin(MOTOR_0, motor_speeds[0]);

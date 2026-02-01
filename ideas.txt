@@ -21,3 +21,8 @@ Gives warning if Slave reboots (ACK index goes back to 0/decreases)
 
 
 Electrical E-stops for pico and jetson
+
+
+18.8ms IDLE
+2.52ms TRANS
+11.8% time spent idle
