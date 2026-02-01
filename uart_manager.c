@@ -80,16 +80,16 @@ void send_msg(char msg[], enum MSG_SEVERITY severity) {
     char formatted_msg[MSG_MAX_SIZE];
 
     uint16_t boot_counter = boot_counter_get();
-    char formatted_counter[3];
-    formatted_counter[0] = (boot_counter >> 8) & 0xFF;  // high byte
-    formatted_counter[1] = boot_counter & 0xFF;         // low byte
-    formatted_counter[2] = '\0';
+    char boot_counter_format[3];
+    boot_counter_format[0] = (boot_counter >> 8) & 0xFF;  // high byte
+    boot_counter_format[1] = boot_counter & 0xFF;         // low byte
+    boot_counter_format[2] = '\0';
 
     //"AB-MSG=ACK:A"
     if (severity == ERROR) {
-        snprintf(formatted_msg, sizeof formatted_msg, "%s-%s=%s", formatted_counter, "ERR", msg);
+        snprintf(formatted_msg, sizeof formatted_msg, "%s-%s=%s", boot_counter_format, "ERR", msg);
     } else {
-        snprintf(formatted_msg, sizeof formatted_msg, "%s-%s=%s", formatted_counter, "MSG", msg);
+        snprintf(formatted_msg, sizeof formatted_msg, "%s-%s=%s", boot_counter_format, "MSG", msg);
     }
 
     uart_puts(UART_ID, formatted_msg);

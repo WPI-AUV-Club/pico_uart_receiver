@@ -1,4 +1,7 @@
+//TODO: ADD WATCHDOG
+
 #include "pico/stdlib.h"
+#include "pico/time.h"
 #include "pwm_manager.h"
 #include "uart_manager.h"
 #include "boot_counter.h"
@@ -15,8 +18,12 @@
 #define MOTOR_6 8
 #define MOTOR_7 9
 
+#define MAX_TIME_BETWEEN_PACKETS 25
+
 
 unsigned char ack_index = 1;
+uint64_t last_packet_received_ms;
+uint64_t curr_time_ms;
 
 int main(){
     boot_counter_init();
@@ -35,10 +42,27 @@ int main(){
     init_pwm_pin(MOTOR_6);
     init_pwm_pin(MOTOR_7);
 
+    set_pwm_pin(MOTOR_0, 127);
+    set_pwm_pin(MOTOR_1, 127);
+    set_pwm_pin(MOTOR_2, 127);
+    set_pwm_pin(MOTOR_3, 127);
+    set_pwm_pin(MOTOR_4, 127);
+    set_pwm_pin(MOTOR_5, 127);
+    set_pwm_pin(MOTOR_6, 127);
+    set_pwm_pin(MOTOR_7, 127);
+
     init_uart();
 
-    //Create a buffer that will hold all of the received speeds, and once all of them are received update PWM outputs
+    last_packet_received_ms = time_us_64()/1000;
+
+
     while (1) {
+        curr_time_ms = time_us_64()/1000;
+        if (curr_time_ms - last_packet_received_ms > MAX_TIME_BETWEEN_PACKETS) {
+            last_packet_received_ms = curr_time_ms;
+            send_msg("MISSED_PACKET", ERROR);
+        }
+        
         enum STATUS_FLAGS status = handle_status_flag();
         if (status == INCOMPLETE_PACKET) {
             send_msg("MALFORMED_PACKET", ERROR);
