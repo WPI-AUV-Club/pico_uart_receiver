@@ -28,34 +28,39 @@ set(PICO_BOARD pico CACHE STRING "Board type")
 # Pull in Raspberry Pi Pico SDK (must be before project)
 include(pico_sdk_import.cmake)
 
-project(PICO_UART_PWM C CXX ASM)
+project(main C CXX ASM)
 
 # Initialise the Raspberry Pi Pico SDK
 pico_sdk_init()
 
 # Add executable. Default name is the project name, version 0.1
 
-add_executable(PICO_UART_PWM PICO_UART_PWM.c )
+add_executable(main 
+    main.c 
+    pwm_manager.c
+    uart_manager.c
+    boot_counter.c
+)
 
-pico_set_program_name(PICO_UART_PWM "PICO_UART_PWM")
-pico_set_program_version(PICO_UART_PWM "0.1")
+pico_set_program_name(main "main")
+pico_set_program_version(main "0.1")
 
 # Modify the below lines to enable/disable output over UART/USB
-pico_enable_stdio_uart(PICO_UART_PWM 1)
-pico_enable_stdio_usb(PICO_UART_PWM 0)
+pico_enable_stdio_uart(main 1)
+pico_enable_stdio_usb(main 0)
 
 # Add the standard library to the build
-target_link_libraries(PICO_UART_PWM  pico_stdlib hardware_gpio hardware_pwm hardware_uart)
+target_link_libraries(main pico_stdlib hardware_gpio hardware_pwm hardware_uart hardware_flash)
 
 # Add the standard include files to the build
-target_include_directories(PICO_UART_PWM PRIVATE
+target_include_directories(main PRIVATE
         ${CMAKE_CURRENT_LIST_DIR}
 )
 
 # Add any user requested libraries
-target_link_libraries(PICO_UART_PWM 
+target_link_libraries(main 
         hardware_watchdog
         )
 
-pico_add_extra_outputs(PICO_UART_PWM)
+pico_add_extra_outputs(main)
 

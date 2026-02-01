@@ -1,0 +1,23 @@
+UART:
+Heartbeat
+Checksum (CRC would be cool)
+Seqeuntial Packet Numbers
+Watchdog implemented on slave (Reset by valid packets?)	
+
+Slave:
+Verify packet has good content before setting motors
+If no packet is recieved after a certain time, all motors stopped
+Alert Master to Bad/Missing packets (Indicator light if possible)
+Sends ACK to Master with incrementing ACK labelling so watchdog resets are noticed
+Has watchdog in case it hangs
+
+Master:
+Expect a good ACK signal after each motor request
+Always have some minimum freq of motor updates to keep slave happy
+Gives warning if it misses ACK signal at expected freq, gives error if it stops
+Gives warning if Slave reboots (ACK index goes back to 0/decreases)
+
+5V, GND, M1, M2, S1, S2
+
+
+Electrical E-stops for pico and jetson
