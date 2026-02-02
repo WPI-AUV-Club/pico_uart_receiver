@@ -8,16 +8,6 @@
 #include <string.h>
 #include <stdio.h>
 
-//Motor GPIO Pin Mapping
-#define MOTOR_0 2
-#define MOTOR_1 3
-#define MOTOR_2 4
-#define MOTOR_3 5
-#define MOTOR_4 6
-#define MOTOR_5 7
-#define MOTOR_6 8
-#define MOTOR_7 9
-
 #define MAX_TIME_BETWEEN_PACKETS 60
 
 
@@ -42,14 +32,7 @@ int main(){
     init_pwm_pin(MOTOR_6);
     init_pwm_pin(MOTOR_7);
 
-    set_pwm_pin(MOTOR_0, 127);
-    set_pwm_pin(MOTOR_1, 127);
-    set_pwm_pin(MOTOR_2, 127);
-    set_pwm_pin(MOTOR_3, 127);
-    set_pwm_pin(MOTOR_4, 127);
-    set_pwm_pin(MOTOR_5, 127);
-    set_pwm_pin(MOTOR_6, 127);
-    set_pwm_pin(MOTOR_7, 127);
+    set_all_pins(FULL_STOP_THROTTLE);
 
     init_uart();
 
@@ -61,11 +44,13 @@ int main(){
         if (curr_time_ms - last_packet_received_ms > MAX_TIME_BETWEEN_PACKETS) {
             last_packet_received_ms = curr_time_ms;
             send_msg("MISSED_PACKET", ERROR);
+            set_all_pins(FULL_STOP_THROTTLE);
         }
         
         enum STATUS_FLAGS status = handle_status_flag();
         if (status == INCOMPLETE_PACKET) {
             send_msg("MALFORMED_PACKET", ERROR);
+            set_all_pins(FULL_STOP_THROTTLE);
             continue;
         } else if (status == IDLE) {
             continue;

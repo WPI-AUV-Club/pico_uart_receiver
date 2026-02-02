@@ -3,6 +3,7 @@
 
 #include "pico/stdlib.h"
 #include "hardware/uart.h"
+#include "pwm_manager.h"
 #include <string.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -26,7 +27,7 @@ void on_uart_rx() {
             } else {
                 status_flag = INCOMPLETE_PACKET;
             }
-            memset(uart_buffer, 127, sizeof uart_buffer); //Set Buffer to full stop
+            memset(uart_buffer, FULL_STOP_THROTTLE, sizeof uart_buffer); //Set Buffer to full stop
             buffer_index = 0;
 
             continue;

@@ -25,7 +25,7 @@ void init_pwm_pin(uint pin) {
  */
 void set_pwm_pin(uint pin, char throttle) {
     float duty_cycle;
-    if (throttle == 127) {
+    if (throttle == FULL_STOP_THROTTLE) {
         duty_cycle = get_duty_cycle(PWM_FREQ, FULL_STOP_MS);
     } else {
         float pulse_len_ms = naive_lerp(FULL_REVERSE_MS, FULL_FORWARD_MS, throttle/254.0f);
@@ -35,6 +35,17 @@ void set_pwm_pin(uint pin, char throttle) {
     uint slice_num = pwm_gpio_to_slice_num(pin);
     uint chan = pwm_gpio_to_channel(pin);
     pwm_set_freq_duty(slice_num, chan, PWM_FREQ, duty_cycle);
+}
+
+void set_all_pins(char throttle) {
+    set_pwm_pin(MOTOR_0, throttle);
+    set_pwm_pin(MOTOR_1, throttle);
+    set_pwm_pin(MOTOR_2, throttle);
+    set_pwm_pin(MOTOR_3, throttle);
+    set_pwm_pin(MOTOR_4, throttle);
+    set_pwm_pin(MOTOR_5, throttle);
+    set_pwm_pin(MOTOR_6, throttle);
+    set_pwm_pin(MOTOR_7, throttle);
 }
 
 
