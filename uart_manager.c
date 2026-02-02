@@ -37,7 +37,7 @@ void on_uart_rx() {
             continue;
         }
 
-        uart_buffer[buffer_index];
+        uart_buffer[buffer_index] = received_char;
         buffer_index++;
     }
 }

@@ -26,3 +26,18 @@ Electrical E-stops for pico and jetson
 18.8ms IDLE
 2.52ms TRANS
 11.8% time spent idle
+
+1.1ms @ 0
+1.9ms @ 254
+1.5ms @ 127
+1.4ms @ 100
+1.73ms @ 200
+1.5ms @ 127
+1.5ms @ 127
+1.5ms @ 127
+
+
+0-254
+#define FULL_FORWARD_MS 1.9
+#define FULL_REVERSE_MS 1.1
+#define FULL_STOP_MS 1.5

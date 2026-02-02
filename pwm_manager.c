@@ -28,7 +28,7 @@ void set_pwm_pin(uint pin, char throttle) {
     if (throttle == 127) {
         duty_cycle = get_duty_cycle(PWM_FREQ, FULL_STOP_MS);
     } else {
-        int pulse_len_ms = naive_lerp(FULL_REVERSE_MS, FULL_FORWARD_MS, throttle/254.0f);
+        float pulse_len_ms = naive_lerp(FULL_REVERSE_MS, FULL_FORWARD_MS, throttle/254.0f);
         duty_cycle = get_duty_cycle(PWM_FREQ, pulse_len_ms);
     }
 
@@ -51,7 +51,7 @@ static uint32_t pwm_set_freq_duty(uint slice_num, uint chan, uint32_t freq, int 
 
     uint32_t wrap = clock * 16 / divider16 / freq - 1;
 
-    pwm_set_clkdiv_int_frac(slice_num, divider16/16, divider16 & 0xF);
+    pwm_set_clkdiv_int_frac4(slice_num, divider16/16, divider16 & 0xF);
     pwm_set_wrap(slice_num, wrap);
     pwm_set_chan_level(slice_num, chan, wrap * duty_cycle / 100);
 
@@ -60,5 +60,5 @@ static uint32_t pwm_set_freq_duty(uint slice_num, uint chan, uint32_t freq, int 
 
 
 static float naive_lerp(float a, float b, float t) {
-    return a + t * (b - a);
+    return a + t*(b - a);
 }
