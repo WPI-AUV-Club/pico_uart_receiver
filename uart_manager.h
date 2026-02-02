@@ -19,6 +19,7 @@ enum MSG_SEVERITY {
 	NORMAL,
 	ERROR,
 };
+//Do not add a new status without handling it in main loop
 enum STATUS_FLAGS {
 	IDLE,
 	VALID_PACKET,

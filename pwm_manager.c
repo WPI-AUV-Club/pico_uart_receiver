@@ -37,22 +37,6 @@ void set_pwm_pin(uint pin, char throttle) {
     pwm_set_freq_duty(slice_num, chan, PWM_FREQ, duty_cycle);
 }
 
-/*! \brief Set all pwm outputs to the given throttle value
- * \ingroup pwm_manager
- *
- * \param pin throttle value [0 full reverse, 127 full stop, 254 full forward]
- */
-void set_all_pwm_pins(char throttle) {
-    set_pwm_pin(MOTOR_0, throttle);
-    set_pwm_pin(MOTOR_1, throttle);
-    set_pwm_pin(MOTOR_2, throttle);
-    set_pwm_pin(MOTOR_3, throttle);
-    set_pwm_pin(MOTOR_4, throttle);
-    set_pwm_pin(MOTOR_5, throttle);
-    set_pwm_pin(MOTOR_6, throttle);
-    set_pwm_pin(MOTOR_7, throttle);
-}
-
 
 /* For a given freq and desired pulse len, calculate the nessecary duty cycle */
 static float get_duty_cycle(uint freq, float pulse_len_ms) {
