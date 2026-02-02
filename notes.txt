@@ -23,7 +23,7 @@ Gives warning if Slave reboots (ACK index goes back to 0/decreases)
 Electrical E-stops for pico and jetson
 Status LEDS
 Dont run UART lines next to high current battery shit
-need motor testbench
+need motor testbench - litally just connectors between ESC and motor, i have a adjustable power supply
 
 
 18.8ms IDLE

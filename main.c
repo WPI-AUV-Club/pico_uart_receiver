@@ -1,5 +1,3 @@
-//TODO: ADD HARDWARE LEVEL WATCHDOG
-
 #include "pico/stdlib.h"
 #include "pico/time.h"
 #include "pwm_manager.h"
@@ -7,6 +5,8 @@
 #include "boot_counter.h"
 #include <string.h>
 #include <stdio.h>
+
+#define WATCHDOG_MAX_TIME_MS 200
 
 
 unsigned char ack_index = 1;
@@ -41,11 +41,19 @@ int main(){
     //UART
     init_uart();
 
+    //Enable watchdog and notify if a watchdog reset happened
+    if (watchdog_enable_caused_reboot()) {
+        send_msg("WATCHDOG_RST", ERROR);
+    }
+    watchdog_enable(WATCHDOG_MAX_TIME_MS, 1);
+
 
     last_packet_received_ms = time_us_64()/1000;
 
     //Main loop
     while (1) {
+        watchdog_update();
+
         //Flag a missed packet from master device and stop motors
         curr_time_ms = time_us_64()/1000;
         if (curr_time_ms - last_packet_received_ms > MAX_TIME_BETWEEN_PACKETS_MS) {
