@@ -8,9 +8,6 @@
 #include <string.h>
 #include <stdio.h>
 
-#define MAX_TIME_BETWEEN_PACKETS 60
-
-
 unsigned char ack_index = 1;
 uint64_t last_packet_received_ms;
 uint64_t curr_time_ms;
@@ -41,7 +38,7 @@ int main(){
 
     while (1) {
         curr_time_ms = time_us_64()/1000;
-        if (curr_time_ms - last_packet_received_ms > MAX_TIME_BETWEEN_PACKETS) {
+        if (curr_time_ms - last_packet_received_ms > MAX_TIME_BETWEEN_PACKETS_MS) {
             last_packet_received_ms = curr_time_ms;
             send_msg("MISSED_PACKET", ERROR);
             set_all_pins(FULL_STOP_THROTTLE);
