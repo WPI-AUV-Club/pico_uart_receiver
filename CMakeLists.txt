@@ -50,7 +50,13 @@ pico_enable_stdio_uart(main 1)
 pico_enable_stdio_usb(main 0)
 
 # Add the standard library to the build
-target_link_libraries(main pico_stdlib hardware_gpio hardware_pwm hardware_uart hardware_flash)
+target_link_libraries(main 
+    pico_stdlib 
+    hardware_gpio 
+    hardware_pwm 
+    hardware_uart 
+    hardware_flash
+)
 
 # Add the standard include files to the build
 target_include_directories(main PRIVATE

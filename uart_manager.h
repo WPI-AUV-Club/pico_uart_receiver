@@ -9,7 +9,6 @@
 #define UART_TX_PIN 0
 #define UART_RX_PIN 1
 
-#define MSG_MAX_SIZE 32
 #define BUFFER_LEN 8
 #define TERMINATE_CHAR 255
 
@@ -26,12 +25,12 @@ enum STATUS_FLAGS {
 	INCOMPLETE_PACKET,
 };
 
-
 void init_uart();
-void send_msg(char msg[], enum MSG_SEVERITY);
-char* get_received_buffer();
 void on_uart_rx();
+char* get_received_buffer();
+void send_msg(char msg[], enum MSG_SEVERITY);
 enum STATUS_FLAGS handle_status_flag();
+
 static char* safe_concat(const char *s1, const char *s2);
 
 #endif

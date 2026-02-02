@@ -3,7 +3,7 @@
 
 
 /*! \brief Initialize a pin for PWM output
- *  \ingroup pwm_manager
+ * \ingroup pwm_manager
  *
  * Configure the PWM slice and channel for the given PWM at PWM_FREQ 
  *
@@ -16,7 +16,7 @@ void init_pwm_pin(uint pin) {
 }
 
 /*! \brief Set a PWM output to control an ESC
- *  \ingroup pwm_manager
+ * \ingroup pwm_manager
  *
  * Translate the given throttle value to a pwm duty cycle appropriate to control the ESC 
  *
@@ -37,7 +37,12 @@ void set_pwm_pin(uint pin, char throttle) {
     pwm_set_freq_duty(slice_num, chan, PWM_FREQ, duty_cycle);
 }
 
-void set_all_pins(char throttle) {
+/*! \brief Set all pwm outputs to the given throttle value
+ * \ingroup pwm_manager
+ *
+ * \param pin throttle value [0 full reverse, 127 full stop, 254 full forward]
+ */
+void set_all_pwm_pins(char throttle) {
     set_pwm_pin(MOTOR_0, throttle);
     set_pwm_pin(MOTOR_1, throttle);
     set_pwm_pin(MOTOR_2, throttle);
@@ -49,12 +54,13 @@ void set_all_pins(char throttle) {
 }
 
 
+/* For a given freq and desired pulse len, calculate the nessecary duty cycle */
 static float get_duty_cycle(uint freq, float pulse_len_ms) {
     float total_pulse_ms = 1.0/freq*1000.0;
     return (pulse_len_ms/total_pulse_ms)*100.0;
 }
 
-
+/* Set the given pwm slice+chan to the desired freq and duty cycle*/
 static uint32_t pwm_set_freq_duty(uint slice_num, uint chan, uint32_t freq, float duty_cycle) {
     uint32_t clock = 125000000;
     uint32_t divider16 = clock / freq / 4096 + (clock % (freq * 4096) != 0);
@@ -69,7 +75,7 @@ static uint32_t pwm_set_freq_duty(uint slice_num, uint chan, uint32_t freq, floa
     return wrap;
 }
 
-
+/* Linear interpolation between 2 values - Naive because no input validation whatsoever*/
 static float naive_lerp(float a, float b, float t) {
     return a + t*(b - a);
 }

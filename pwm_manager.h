@@ -26,9 +26,10 @@
 // Two channels of the same slice run at the same frequency, but can have a different duty rate. 
 // 3A -> Slice 3, channel A
 
+
 void init_pwm_pin(uint pin);
 void set_pwm_pin(uint pin, char throttle);
-void set_all_pins(char throttle);
+void set_all_pwm_pins(char throttle);
 
 static uint32_t pwm_set_freq_duty(uint slice_num, uint chan, uint32_t freq, float duty_cycle);
 static float get_duty_cycle(uint freq, float pulse_len_ms);

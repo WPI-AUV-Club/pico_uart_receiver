@@ -3,7 +3,56 @@
 #include "hardware/sync.h"
 #include <string.h>
 
+
 static uint16_t boot_count_ram;
+
+
+/*! \brief Force reset the boot counter to provided value - DEBUGGING ONLY
+ * \ingroup boot_counter
+ *
+ * SHOULD ONLY BE USED FOR DEBUGGING PURPOSES 
+ *
+ * \param count 16 bit count value
+ */
+void force_set_boot_counter(uint16_t count) {
+    write_boot_count(count);
+    boot_count_ram = count;
+}
+
+/*! \brief Increment and return the boot counter on startup - call ONCE in main init 
+ * \ingroup boot_counter
+ *
+ * Increments a sequential counter that is used on msg headers to allow master device to identify slave reboots
+ * 
+ * \return Unique 16 bit count value for this boot
+ */
+uint16_t boot_counter_init(void) {
+    uint16_t count = read_boot_count();
+    
+    if (count == 0xFFFF) {
+        count = 0x0101; //first ever boot (set to 1 as to avoid null terminators when cast to char)
+    } else {
+        count++;
+    }
+
+    if (count & 0x00FF == 0) {
+        count = count & 0xFF00 | 0x0001; //Loop LSB from 0xFF to 0x01 to avoid null terminator
+    }
+
+    write_boot_count(count);
+    boot_count_ram = count;
+    return count;
+}
+
+/*! \brief Get the counter for this boot - boot_counter_init() must be called first
+ * \ingroup boot_counter
+ * 
+ * \return Unique 16 bit count value for this boot
+ */
+uint16_t boot_counter_get(void) {
+    return boot_count_ram;
+}
+
 
 /* Read boot counter from flash */
 static uint16_t read_boot_count(void) {
@@ -26,24 +75,4 @@ static void write_boot_count(uint16_t value) {
     flash_range_program(FLASH_TARGET_OFFSET, buffer, FLASH_SECTOR_SIZE);
 
     restore_interrupts(ints);
-}
-
-/* Call once at boot */
-uint16_t boot_counter_init(void) {
-    uint16_t count = read_boot_count();
-
-    if (count == 0xFFFF) {
-        count = 0;   // first ever boot
-    } else {
-        count++;
-    }
-
-    write_boot_count(count);
-    boot_count_ram = count;
-    return count;
-}
-
-/* Optional getter */
-uint16_t boot_counter_get(void) {
-    return boot_count_ram;
 }

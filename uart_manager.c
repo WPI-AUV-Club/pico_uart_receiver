@@ -10,12 +10,23 @@
 
 
 enum STATUS_FLAGS status_flag = IDLE;
-
 char uart_buffer[BUFFER_LEN];
 char received_speeds[BUFFER_LEN];
 uint buffer_index = 0;
 
 
+/*! \brief Interrupt handler for UART RX
+ * \ingroup uart_manager
+ *
+ * Handle incoming UART data and write it to uart_buffer.
+ * When uart_buffer is filled and a terminating char is received, copy
+ * uart_buffer into the received_speeds buffer.
+ * 
+ * Also uses the status_flag to allow the main loop to handle errors generated
+ * here as well as know when a new packet was received
+ * 
+ * Its bad practice to have an interrupt function this long but... call that room for improvement :3
+ */
 void on_uart_rx() {
     while (uart_is_readable(UART_ID)) {        
         uint8_t received_char = uart_getc(UART_ID);
@@ -43,12 +54,23 @@ void on_uart_rx() {
     }
 }
 
-
+/*! \brief Get the received_speeds buffer containing the data (motor speeds) from the last valid packet
+ * \ingroup uart_manager
+ *
+ * \returns char pointer to received_speeds buffer
+ */
 char* get_received_buffer() {
     return received_speeds;
 }
 
-
+/*! \brief Get the current status flag and then set it to back to IDLE
+ * \ingroup uart_manager
+ *
+ * Allows main function to know the status of the UART interrupt handler
+ * This function should NOT be called without immediately handling the returned status
+ * 
+ * \returns Current UART RX status - MUST BE HANDLED
+ */
 enum STATUS_FLAGS handle_status_flag() {
     enum STATUS_FLAGS current_flag;
     current_flag = status_flag;
@@ -57,7 +79,11 @@ enum STATUS_FLAGS handle_status_flag() {
     return current_flag;
 }
 
-
+/*! \brief Initialize the UART RX and TX lines and interrupts
+ * \ingroup uart_manager
+ *
+ * Must be called once upon initialization
+ */
 void init_uart() {
     //UART Config
     uart_init(UART_ID, BAUD_RATE);
@@ -66,6 +92,8 @@ void init_uart() {
     gpio_set_function(UART_RX_PIN, GPIO_FUNC_UART);
     uart_set_hw_flow(UART_ID, false, false);
     uart_set_format(UART_ID, DATA_BITS, STOP_BITS, PARITY);
+
+    //TODO: Test if enabling FIFO gives better packet loss rates
     uart_set_fifo_enabled(UART_ID, false);
 
     int UART_IRQ = UART_ID == uart0 ? UART0_IRQ : UART1_IRQ;
@@ -78,7 +106,15 @@ void init_uart() {
     uart_set_irq_enables(UART_ID, true, false);
 }
 
-
+/*! \brief BLOCKING FUNCTION (DO NOT USE INSIDE INTERRUPT) send a message to the UART master device
+ * \ingroup uart_manager
+ *
+ * This will block until the TX line is free, then send its message
+ * All messages are formatted with a header that contains the boot id and message severity
+ * 
+ * \param msg message to send - MUST BE NULL TERMINATED, no max length but messages should be kept short to minimize TX duty cycle
+ * \param severity severity of message, error, warming, normal print, ect. 
+ */
 void send_msg(char msg[], enum MSG_SEVERITY severity) {
     char msg_header[8];
 
@@ -88,6 +124,7 @@ void send_msg(char msg[], enum MSG_SEVERITY severity) {
     boot_counter_format[1] = boot_counter & 0xFF;         // low byte
     boot_counter_format[2] = '\0';
 
+    //Example msg formatting
     //"AB-MSG=ACK:A"
     if (severity == ERROR) {
         sprintf(msg_header, "%s-%s=", boot_counter_format, "ERR");
@@ -102,11 +139,13 @@ void send_msg(char msg[], enum MSG_SEVERITY severity) {
     }
 }
 
+
+/* Concat 2 strings of unknown length - MUST FREE RETURNED POINTER */
 static char* safe_concat(const char *s1, const char *s2) {
     // 1. Calculate required size: length1 + length2 + null-terminator + newline
     size_t len1 = strlen(s1);
     size_t len2 = strlen(s2);
-    char *result = malloc(len1 + len2 + 2);
+    char *result = malloc(len1 + len2 + 1);
 
     // 2. Check for malloc failure
     if (result == NULL) return NULL;
@@ -114,7 +153,6 @@ static char* safe_concat(const char *s1, const char *s2) {
     // 3. Perform safe concatenation
     strcpy(result, s1);
     strcat(result, s2);
-    strcat(result, "\n");
 
     return result; // Caller must free() this memory
 }
