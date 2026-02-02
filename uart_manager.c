@@ -112,48 +112,41 @@ void init_uart() {
  * This will block until the TX line is free, then send its message
  * All messages are formatted with a header that contains the boot id and message severity
  * 
+ * Example msg formatting
+ * Message: "AB>ACK:A"
+ * Error: "AB>ERR=OH_NO"
+ * 
  * \param msg message to send - MUST BE NULL TERMINATED, no max length but messages should be kept short to minimize TX duty cycle
  * \param severity severity of message, error, warming, normal print, ect. 
  */
 void send_msg(char msg[], enum MSG_SEVERITY severity) {
-    char msg_header[8];
-
+    //Format boot header
     uint16_t boot_counter = boot_counter_get();
-    char boot_counter_format[3];
-    boot_counter_format[0] = (boot_counter >> 8) & 0xFF;  // high byte
-    boot_counter_format[1] = boot_counter & 0xFF;         // low byte
-    boot_counter_format[2] = '\0';
+    char boot_header[4];
+    boot_header[0] = (boot_counter >> 8) & 0xFF;  // high byte
+    boot_header[1] = boot_counter & 0xFF;         // low byte
+    boot_header[2] = '>';
+    boot_header[3] = '\0';
 
-    //Example msg formatting
-    //"AB-MSG=ACK:A"
+    //Format severity header
+    char severity_header[5] = "";
     if (severity == ERROR) {
-        sprintf(msg_header, "%s-%s=", boot_counter_format, "ERR");
-    } else {
-        sprintf(msg_header, "%s=", boot_counter_format);
+        strcpy(severity_header, "ERR=");
     }
 
-    char *full_msg = safe_concat(msg_header, msg);
-    if (full_msg) {
+    //Allocate memory for full message length
+    size_t full_msg_len = strlen(boot_header)+strlen(severity_header)+strlen(msg);
+    char *full_msg = malloc(full_msg_len + 1); //+1 for null terminator
+    if (full_msg == NULL) return; //Check for valid malloc
+
+    //Concat full message
+    strcpy(full_msg, boot_header);
+    strcat(full_msg, severity_header);
+    strcat(full_msg, msg);
+
+    if (full_msg) { //On valid malloc, send the message, 
         uart_puts(UART_ID, full_msg);
-        uart_putc(UART_ID, '\0');
+        uart_putc(UART_ID, '\0'); //null terminator signifies packet end
         free(full_msg); // Free allocated memory
     }
-}
-
-
-/* Concat 2 strings of unknown length - MUST FREE RETURNED POINTER */
-static char* safe_concat(const char *s1, const char *s2) {
-    // 1. Calculate required size: length1 + length2 + null-terminator + newline
-    size_t len1 = strlen(s1);
-    size_t len2 = strlen(s2);
-    char *result = malloc(len1 + len2 + 1);
-
-    // 2. Check for malloc failure
-    if (result == NULL) return NULL;
-
-    // 3. Perform safe concatenation
-    strcpy(result, s1);
-    strcat(result, s2);
-
-    return result; // Caller must free() this memory
 }

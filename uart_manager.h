@@ -31,6 +31,4 @@ char* get_received_buffer();
 void send_msg(char msg[], enum MSG_SEVERITY);
 enum STATUS_FLAGS handle_status_flag();
 
-static char* safe_concat(const char *s1, const char *s2);
-
 #endif
