@@ -20,9 +20,6 @@ uint64_t curr_time_ms;
  * I've spent too much time on this already lol
  */
 int main(){
-    // force_set_boot_counter(0xFFFF); //TODO: REMOVE ONCE TESTED
-    // force_set_boot_counter(0x01FA); //TODO: REMOVE ONCE TESTED
-
     boot_counter_init();
 
     //Onboard LED

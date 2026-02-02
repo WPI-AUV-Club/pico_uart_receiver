@@ -34,9 +34,8 @@ uint16_t boot_counter_init(void) {
     } else {
         count++;
     }
-
-    if (count & 0x00FF == 0) {
-        count = count & 0xFF00 | 0x0001; //Loop LSB from 0xFF to 0x01 to avoid null terminator
+    if (count % 256 == 0) {
+        count++; //Loop LSB from 0xFF to 0x01 to avoid null terminator
     }
 
     write_boot_count(count);

@@ -135,6 +135,7 @@ void send_msg(char msg[], enum MSG_SEVERITY severity) {
     char *full_msg = safe_concat(msg_header, msg);
     if (full_msg) {
         uart_puts(UART_ID, full_msg);
+        uart_putc(UART_ID, '\0');
         free(full_msg); // Free allocated memory
     }
 }
