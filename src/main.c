@@ -5,7 +5,6 @@
 #include "uart_manager.h"
 #include "boot_counter.h"
 #include "motor_mapping.h"
-#include <string.h>
 #include <stdio.h>
 
 #define WATCHDOG_MAX_TIME_MS 200
