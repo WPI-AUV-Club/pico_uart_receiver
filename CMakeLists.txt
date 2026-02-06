@@ -36,10 +36,10 @@ pico_sdk_init()
 # Add executable. Default name is the project name, version 0.1
 
 add_executable(main 
-    main.c 
-    pwm_manager.c
-    uart_manager.c
-    boot_counter.c
+    src/main.c 
+    src/pwm_manager.c
+    src/uart_manager.c
+    src/boot_counter.c
 )
 
 pico_set_program_name(main "main")

@@ -17,33 +17,16 @@ Always have some minimum freq of motor updates to keep slave happy
 Gives warning if it misses ACK signal at expected freq, gives error if it stops
 Gives warning if Slave reboots (ACK index goes back to 0/decreases)
 
-5V, GND, M1, M2, S1, S2
 
-
+Meeting Notes:
 Electrical E-stops for pico and jetson
 Status LEDS
 Dont run UART lines next to high current battery shit
 need motor testbench - litally just connectors between ESC and motor, i have a adjustable power supply
 
-
 18.8ms IDLE
 2.52ms TRANS
-11.8% time spent idle
-
-1.1ms @ 0
-1.9ms @ 254
-1.5ms @ 127
-1.4ms @ 100
-1.73ms @ 200
-1.5ms @ 127
-1.5ms @ 127
-1.5ms @ 127
+11.8% bus utilization
 
 
-0-254
-#define FULL_FORWARD_MS 1.9
-#define FULL_REVERSE_MS 1.1
-#define FULL_STOP_MS 1.5
-76%
-44% Duty Cycles
-32 possible values
+Could be fun to write sim code to turn desired thrust vectors into motor commands - need thruster positions and rotations
