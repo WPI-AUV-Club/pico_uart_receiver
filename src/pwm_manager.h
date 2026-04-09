@@ -6,7 +6,7 @@
 #define FULL_FORWARD_MS 1.9
 #define FULL_REVERSE_MS 1.1
 #define FULL_STOP_MS 1.5
-#define FULL_STOP_THROTTLE 127
+#define FULL_STOP_THROTTLE 128
 #define PWM_FREQ 400
 
 // GPIO         0  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 

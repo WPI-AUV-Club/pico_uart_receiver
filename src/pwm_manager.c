@@ -21,14 +21,14 @@ void init_pwm_pin(uint pin) {
  * Translate the given throttle value to a pwm duty cycle appropriate to control the ESC 
  *
  * \param pin gpio pin
- * \param throttle throttle value [0 full reverse, 127 full stop, 254 full forward]
+ * \param throttle throttle value [1 full reverse, 128 full stop, 255 full forward]
  */
 void set_pwm_pin(uint pin, char throttle) {
     float duty_cycle;
     if (throttle == FULL_STOP_THROTTLE) {
         duty_cycle = get_duty_cycle(PWM_FREQ, FULL_STOP_MS);
     } else {
-        float pulse_len_ms = naive_lerp(FULL_REVERSE_MS, FULL_FORWARD_MS, throttle/254.0f);
+        float pulse_len_ms = naive_lerp(FULL_REVERSE_MS, FULL_FORWARD_MS, (throttle-1)/254.0f);
         duty_cycle = get_duty_cycle(PWM_FREQ, pulse_len_ms);
     }
 
