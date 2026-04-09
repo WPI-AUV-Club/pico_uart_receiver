@@ -10,7 +10,7 @@
 #define UART_RX_PIN 1
 
 #define BUFFER_LEN 8
-#define TERMINATE_CHAR 255
+#define TERMINATE_CHAR 0
 
 #define MAX_TIME_BETWEEN_PACKETS_MS 60
 

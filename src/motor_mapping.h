@@ -30,8 +30,6 @@ void init_motors() {
 
 /*! \brief Set all motors to full stop
 * \ingroup motor_map
-*
-* \param pin throttle value [0 full reverse, 127 full stop, 254 full forward]
 */
 void stop_all_motors() {
     set_pwm_pin(MOTOR_0, FULL_STOP_THROTTLE);
@@ -47,7 +45,7 @@ void stop_all_motors() {
 /*! \brief Given an array of throttles, set each motors speed
 * \ingroup motor_map
 *
-* \param motor_speeds array of speeds [0 full reverse, 127 full stop, 254 full forward]
+* \param motor_speeds array of speeds [1 full reverse, 128 full stop, 255 full forward]
 */
 void set_motor_speeds(char motor_speeds[]) {
         set_pwm_pin(MOTOR_0, motor_speeds[0]);
