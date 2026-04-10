@@ -14,7 +14,6 @@
 
 #define MAX_TIME_BETWEEN_PACKETS_MS 60
 
-
 enum MSG_SEVERITY {
 	NORMAL,
 	ERROR,
@@ -31,5 +30,7 @@ void on_uart_rx();
 char* get_received_buffer();
 void send_msg(char msg[], enum MSG_SEVERITY);
 enum STATUS_FLAGS handle_status_flag();
+int findSubstring(char *txt, char *pat);
+int isPaired();
 
 #endif

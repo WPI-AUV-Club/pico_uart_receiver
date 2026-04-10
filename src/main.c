@@ -3,7 +3,6 @@
 #include "hardware/watchdog.h"
 #include "pwm_manager.h"
 #include "uart_manager.h"
-#include "boot_counter.h"
 #include "motor_mapping.h"
 #include <stdio.h>
 
@@ -21,8 +20,6 @@ uint64_t curr_time_ms;
  * I've spent too much time on this already lol
  */
 int main(){
-    boot_counter_init();
-
     //Onboard LED
     gpio_init(PICO_DEFAULT_LED_PIN);
     gpio_set_dir(PICO_DEFAULT_LED_PIN, GPIO_OUT);
@@ -51,8 +48,13 @@ int main(){
         //Flag a missed packet from master device and stop motors
         curr_time_ms = time_us_64()/1000;
         if (curr_time_ms - last_packet_received_ms > MAX_TIME_BETWEEN_PACKETS_MS) {
+            if (isPaired() == -1) {
+                send_msg("REQ:ID", NORMAL); //Periodically request pairing if not paired
+            } else {
+                send_msg("MISSED_PACKET", ERROR);
+            }
+
             last_packet_received_ms = curr_time_ms;
-            send_msg("MISSED_PACKET", ERROR);
             stop_all_motors();
         }
         

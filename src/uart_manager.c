@@ -1,5 +1,4 @@
 #include "uart_manager.h"
-#include "boot_counter.h"
 
 #include "pico/stdlib.h"
 #include "hardware/uart.h"
@@ -10,10 +9,14 @@
 
 
 enum STATUS_FLAGS status_flag = IDLE;
+int paired_with_controller = -1;
 char uart_buffer[BUFFER_LEN];
 char received_speeds[BUFFER_LEN];
 uint buffer_index = 0;
 
+int isPaired() {
+    return paired_with_controller;
+}
 
 /*! \brief Interrupt handler for UART RX
  * \ingroup uart_manager
@@ -51,6 +54,10 @@ void on_uart_rx() {
 
         uart_buffer[buffer_index] = received_char;
         buffer_index++;
+
+        if (!paired_with_controller){
+            paired_with_controller = (findSubstring(uart_buffer, "ACK:ID") >= 0);
+        }
     }
 }
 
@@ -110,24 +117,16 @@ void init_uart() {
  * \ingroup uart_manager
  *
  * This will block until the TX line is free, then send its message
- * All messages are formatted with a header that contains the boot id and message severity
+ * All messages are formatted with a header that contains the message severity
  * 
  * Example msg formatting
- * Message: "AB>ACK:A"
- * Error: "AB>ERR=OH_NO"
+ * Message: "ACK:A"
+ * Error: "ERR=OH_NO"
  * 
  * \param msg message to send - MUST BE NULL TERMINATED, no max length but messages should be kept short to minimize TX duty cycle
  * \param severity severity of message, error, warming, normal print, ect. 
  */
 void send_msg(char msg[], enum MSG_SEVERITY severity) {
-    //Format boot header
-    uint16_t boot_counter = boot_counter_get();
-    char boot_header[4];
-    boot_header[0] = (boot_counter >> 8) & 0xFF;  // high byte
-    boot_header[1] = boot_counter & 0xFF;         // low byte
-    boot_header[2] = '>';
-    boot_header[3] = '\0';
-
     //Format severity header
     char severity_header[5] = "";
     if (severity == ERROR) {
@@ -135,13 +134,12 @@ void send_msg(char msg[], enum MSG_SEVERITY severity) {
     }
 
     //Allocate memory for full message length
-    size_t full_msg_len = strlen(boot_header)+strlen(severity_header)+strlen(msg);
+    size_t full_msg_len = strlen(severity_header)+strlen(msg);
     char *full_msg = malloc(full_msg_len + 1); //+1 for null terminator
     if (full_msg == NULL) return; //Check for valid malloc
 
     //Concat full message
-    strcpy(full_msg, boot_header);
-    strcat(full_msg, severity_header);
+    strcpy(full_msg, severity_header);
     strcat(full_msg, msg);
 
     if (full_msg) { //On valid malloc, send the message, 
@@ -149,4 +147,25 @@ void send_msg(char msg[], enum MSG_SEVERITY severity) {
         uart_putc(UART_ID, '\0'); //null terminator signifies packet end
         free(full_msg); // Free allocated memory
     }
+}
+
+// Function to find if pat is a substring of txt
+// CREDIT: https://www.geeksforgeeks.org/dsa/check-string-substring-another/
+int findSubstring(char *txt, char *pat) {
+    int n = strlen(txt);
+    int m = strlen(pat);
+
+    // Iterate through txt
+    for (int i = 0; i <= n - m; i++) {
+        // Check for substring match
+        int j;
+        for (j = 0; j < m; j++) {
+            // Mismatch found
+            if (txt[i + j] != pat[j]) break;
+        }
+        // If we completed the inner loop, we found a match
+        if (j == m) return i;
+    }
+    
+    return -1;
 }

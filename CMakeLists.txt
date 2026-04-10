@@ -39,7 +39,6 @@ add_executable(main
     src/main.c 
     src/pwm_manager.c
     src/uart_manager.c
-    src/boot_counter.c
 )
 
 pico_set_program_name(main "main")
