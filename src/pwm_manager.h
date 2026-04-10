@@ -3,12 +3,9 @@
 
 #include "pico/stdlib.h"
 
-#define FULL_FORWARD_MS 1.5
-#define FULL_REVERSE_MS 0
-// #define FULL_FORWARD_MS 1.9
-// #define FULL_REVERSE_MS 1.1
-#define FULL_STOP_MS 0.75
-// #define FULL_STOP_MS 1.5
+#define FULL_FORWARD_MS 1.9
+#define FULL_REVERSE_MS 1.1
+#define FULL_STOP_MS 1.5
 #define FULL_STOP_THROTTLE 128
 #define PWM_FREQ 400
 
