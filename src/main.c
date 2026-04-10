@@ -57,6 +57,7 @@ int main(){
             last_packet_received_ms = curr_time_ms;
             stop_all_motors();
         }
+        if (isPaired() == -1) continue;
         
         //Flag a incorrectly formatted packet from master device and stop motors
         enum STATUS_FLAGS status = handle_status_flag();

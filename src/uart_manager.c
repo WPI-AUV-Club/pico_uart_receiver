@@ -55,8 +55,8 @@ void on_uart_rx() {
         uart_buffer[buffer_index] = received_char;
         buffer_index++;
 
-        if (!paired_with_controller){
-            paired_with_controller = (findSubstring(uart_buffer, "ACK:ID") >= 0);
+        if (paired_with_controller == -1){
+            paired_with_controller = findSubstring(uart_buffer, "ACK:ID");
         }
     }
 }
