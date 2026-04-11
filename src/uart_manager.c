@@ -123,14 +123,14 @@ void init_uart() {
  * Message: "ACK:A"
  * Error: "ERR=OH_NO"
  * 
- * \param msg message to send - MUST BE NULL TERMINATED, no max length but messages should be kept short to minimize TX duty cycle
+ * \param msg message to send - MUST BE NULL TERMINATED, MAX 6 CHAR LENGTH (+\0)
  * \param severity severity of message, error, warming, normal print, ect. 
  */
 void send_msg(char msg[], enum MSG_SEVERITY severity) {
     //Format severity header
     char severity_header[5] = "";
     if (severity == ERROR) {
-        strcpy(severity_header, "ERR=");
+        strcpy(severity_header, "ERR:");
     }
 
     //Allocate memory for full message length

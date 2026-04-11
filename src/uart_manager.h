@@ -5,7 +5,7 @@
 #define BAUD_RATE 38400
 #define DATA_BITS 8
 #define STOP_BITS 1
-#define PARITY UART_PARITY_EVEN
+#define PARITY UART_PARITY_ODD
 #define UART_TX_PIN 0
 #define UART_RX_PIN 1
 
@@ -13,6 +13,9 @@
 #define TERMINATE_CHAR 0
 
 #define MAX_TIME_BETWEEN_PACKETS_MS 60
+
+#define MISSED_PACKET_ERR "MP"
+#define BAD_PACKET_ERR "BP"
 
 enum MSG_SEVERITY {
 	NORMAL,

@@ -51,7 +51,7 @@ int main(){
             if (isPaired() == -1) {
                 send_msg("REQ:ID", NORMAL); //Periodically request pairing if not paired
             } else {
-                send_msg("MISSED_PACKET", ERROR);
+                send_msg(MISSED_PACKET_ERR, ERROR);
             }
 
             last_packet_received_ms = curr_time_ms;
@@ -62,7 +62,7 @@ int main(){
         //Flag a incorrectly formatted packet from master device and stop motors
         enum STATUS_FLAGS status = handle_status_flag();
         if (status == INCOMPLETE_PACKET) {
-            send_msg("MALFORMED_PACKET", ERROR);
+            send_msg(BAD_PACKET_ERR, ERROR);
             stop_all_motors();
             continue;
         } else if (status == IDLE) { //No new packet received - no action needed
