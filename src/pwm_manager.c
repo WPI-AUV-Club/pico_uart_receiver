@@ -1,5 +1,6 @@
 #include "pwm_manager.h"
 #include "hardware/pwm.h"
+#include <stdlib.h>
 
 
 /*! \brief Initialize a pin for PWM output
@@ -29,6 +30,9 @@ void set_pwm_pin(uint pin, char throttle) {
         duty_cycle = get_duty_cycle(PWM_FREQ, FULL_STOP_MS);
     } else {
         float pulse_len_ms = naive_lerp(FULL_REVERSE_MS, FULL_FORWARD_MS, (throttle-1)/254.0f);
+        if (abs(pulse_len_ms-FULL_STOP_THROTTLE) < DEADBAND) {
+            pulse_len_ms = FULL_STOP_THROTTLE;
+        }
         duty_cycle = get_duty_cycle(PWM_FREQ, pulse_len_ms);
     }
 

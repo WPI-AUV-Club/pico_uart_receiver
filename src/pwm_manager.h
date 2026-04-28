@@ -9,6 +9,7 @@
 
 #define FULL_FORWARD_MS 2.5
 #define FULL_REVERSE_MS 0.2
+#define DEADBAND 0.032
 #define FULL_STOP_MS 0
 
 #define FULL_STOP_THROTTLE 128
